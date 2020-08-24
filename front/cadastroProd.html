@@ -1,0 +1,767 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>cadastro</title>
+    <script src="./node_modules/axios/dist/axios.js"></script>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
+    <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="./css/cssCadastro.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body style="width: 100%; background: #f1f1f1; ">
+    <button class="botaoMagico bt btn-warning" onclick="cria()">botãoMágico</button>
+    <div class="container-fluid " >
+        <h2 class="bg-info" style="text-align: center; color:white;">Painel Administrativo</h2>
+        <br>
+        <div id="lista" class="row ">
+            <div class="col-12 container-fluid">
+                <label for="escolhaLista">Escolha os itens para listar:</label>
+                <select name="escolhaLista" id="escolhaLista" v-on:change="mostrarProd()">
+                    <option value="produto">Produto</option>
+                    <option value="categoria">Categoria</option>
+                </select>
+                <br>
+                <br>
+                <div class="container listaDeProd">
+
+                    <button class="btn btn-info btn-md m-2 btnProduto " v-for="produto in produtos"
+                        v-bind:value="produto.id" style="margin-top: 2% !important;">{{produto.descricao}}</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        var listar = new Vue({
+
+            el: "#lista",
+            data() {
+                return {
+                    produtos: null
+
+                }
+            },
+
+
+            methods: {
+                mostrarProd: function (produto) {
+                    const select = document.getElementById('escolhaLista');
+                    const value = select.options[select.selectedIndex].value;
+
+
+                    if (value === "produto") {
+                        axios
+                            .get('http://localhost:8081/albus/produto')
+                            .then(response => (this.produtos = response.data))
+                    } else {
+                        axios
+                            .get('http://localhost:8081/albus/categoria')
+                            .then(response => (this.produtos = response.data))
+                    }
+
+                }
+
+
+            }
+        })
+
+
+
+    </script>
+
+
+    <br>
+    <br>
+
+    <div class="container-fluid" id="areaAdm">
+        <label for="escolhaAdm">Administrar: </label>
+        <select name="escolhaAdm" id="escolhaAdm" v-on:change="mostraAdm()">
+            <option value="produto">Produto</option>
+            <option value="categoria">Categoria</option>
+        </select>
+        <br>
+
+
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: "#areaAdm",
+            methods: {
+                mostraAdm: function () {
+                    const escolha = document.getElementById("escolhaAdm");
+                    const value = escolha.options[escolha.selectedIndex].value;
+                    if (value === "produto") {
+                        $('#admCategoria').fadeOut();
+                        $('#admProd').fadeIn();
+
+                    } else if (value === "categoria") {
+                        $('#admProd').fadeOut();
+                        $('#admCategoria').fadeIn();
+                    }
+                }
+            }
+        })
+
+    </script>
+    <br>
+    <br>
+    <div class="container-fluid ">
+        <div id="botoes" style=" width: 5%;  box-shadow:  0px 0px 6px rgba(0, 0, 0, 0.7); float: left; text-align: center; position: absolute; z-index: 1000; left: 0; bottom: 0;" class="bg-info rounded-right">
+            <br>
+            <br>
+            <div>
+                <button class="bt btn bg-white" style="margin-top: 10%; width: 50px; height: 50px;"
+                    v-on:click="escolhaBtn('add')" title="Adicionar"><i class="fa fa-plus"
+                        aria-hidden="true"></i></button>
+            </div>
+            <br>
+            <div>
+                <button class="bt btn bg-white" style="margin-top: 10%; width: 50px; height: 50px; "
+                    v-on:click="escolhaBtn('alt')" title="Alterar"><i class="fa fa-pencil"
+                        aria-hidden="true"></i></button>
+            </div>
+            <br>
+            <div>
+                <button class="bt btn bg-white" style="margin-top: 10%; width: 50px; height: 50px;"
+                    v-on:click="escolhaBtn('del')" title="Deletar"><i class="fa fa-trash"
+                        aria-hidden="true"></i></button>
+            </div>
+            <br>
+            
+            <br>
+            <br>
+        </div>
+        <script>
+            var app = new Vue({
+                el: "#botoes",
+                methods: {
+                    escolhaBtn: function (escolha) {
+                        var escolhaAdm = document.getElementById("escolhaAdm");
+                        escolhaAdm = escolhaAdm.options[escolhaAdm.selectedIndex].value;
+                        if (escolhaAdm === "produto") {
+                            $('#altCat').hide();
+                            $('#delCat').hide();
+                            $('#addCat').hide();
+                            if (escolha === "add") {
+                                $('#alterar').hide();
+                                $('#deletar').hide();
+                                $('#adicionar').show();
+                            } else if (escolha === "alt") {
+                                $('#adicionar').hide();
+                                $('#deletar').hide();
+                                $('#alterar').show();
+
+                            } else {
+                                $('#adicionar').hide();
+                                $('#alterar').hide();
+                                $('#deletar').show();
+                            }
+                        } else {
+                            $('#alterar').hide();
+                            $('#deletar').hide();
+                            $('#adicionar').hide();
+                            if (escolha === "add") {
+                                $('#altCat').hide();
+                                $('#delCat').hide();
+                                $('#addCat').show();
+                            } else if (escolha === "alt") {
+                                $('#addCat').hide();
+                                $('#delCat').hide();
+                                $('#altCat').show();
+
+                            } else {
+                                $('#addCat').hide();
+                                $('#altCat').hide();
+                                $('#delCat').show();
+                            }
+                        }
+                    }
+                }
+            })
+        </script>
+        <div class="row" id="admProd" style=" float: left; width:35%; margin: 0; margin-top: -3% ; margin-left: 35%; ">
+            <div class="form col-9" id="adicionar" style=" padding: 0; display: none;">
+
+                <div id="add" style="text-align: left">
+                    <h3>Adicionar Produto</h3>
+                    <label> Nome do produto:</label><input type="text" name="PRO_NOME" id="nome" style="float: right;">
+                    <br>
+                    <label> Categoria:</label><input type="text" name="PRO_CATEGORIA" id="categoria"
+                        style="float: right;"><br>
+                    <label> Quantidade </label><input type="number" name="PRO_QUANTIDADE" id="quantidade"
+                        style="float: right;"><br>
+                    <label> Descrição</label><input type="text" name="PRO_DESCRICAO" id="descricao"
+                        style="float: right;"><br>
+                    <label> Custo:</label><input type="number" name="PRO_CUSTO" id="custo" style="float: right;"><br>
+                    <label> Valor de venda:</label><input type="number" name="PRO_VALOR_DE_VENDA" id="valorDeVenda"
+                        style="float: right;"><br>
+                    <label> url imagem:</label><input type="text" name="PRO_URL_IMG" id="urlImg"
+                        style="float: right;"><br>
+                    <br>
+                    <button class="bt btn-info container-fluid" value="env" v-on:click="post()"> enviar</button>
+                </div>
+            </div>
+
+            <script>
+                var app = new Vue({
+                    el: "#adicionar",
+                    data() {
+                        return {
+                            produtos: null
+                        }
+                    },
+                    methods: {
+                        post: function () {
+                            const nome = document.getElementById("nome").value;
+                            const categoria = document.getElementById("categoria");
+                            const quantidade = document.getElementById("quantidade");
+                            const descricao = document.getElementById("descricao");
+                            const custo = document.getElementById("custo");
+                            const valor_de_venda = document.getElementById("valorDeVenda");
+                            const url_img = document.getElementById("urlImg");
+
+                            try {
+                                axios.post("http://localhost:8081/albus/produto/", {
+                                    "nome": nome,
+                                    "categoria": { "id": JSON.parse(categoria.value) },
+                                    "quantidade": JSON.parse(quantidade.value),
+                                    "descricao": descricao.value,
+                                    "custo": JSON.parse(custo.value),
+                                    "valorDeVenda": JSON.parse(valor_de_venda.value),
+                                    "urlImg": url_img.value
+                                });
+                            } catch (e) {
+                                console.log(e);
+                            } finally {
+                                window.alert("produto cadastrado");
+                            }
+                        }
+                    },
+
+                })
+
+
+            </script>
+            <div class="form col-9" id="alterar" style="display: none;">
+                <h3>Alterar Produto</h3>
+                <label>Produto:</label><br><select name="nomeProd" id="nomeProd" class="container-fluid">
+                    <option v-for="produto in produtos" v-bind:value="produto.id">{{produto.descricao}}</option>
+                </select>
+                <br>
+                <label>Atributo a ser alterado: </label><br><select name="nomeProd" id="nomeAtributo"
+                    class="container-fluid text-left">
+                    <option value="nome">Nome</option>
+                    <option value="categoria">Categoria</option>
+                    <option value="quantidade">Quantidade</option>
+                    <option value="descricao">Descrição</option>
+                    <option value="custo">Custo</option>
+                    <option value="valorDeVenda">Valor de venda</option>
+                    <option value="urlImg">urlImg</option>
+                </select>
+                <br>
+                <label>Novo valor: </label> <br>
+                <input type="text" name="novoValor" id="novoValor" class="container-fluid" />
+                <br>
+                <br>
+                <button class="bt btn-info container-fluid" value="env" v-on:click="alterar()"> enviar</button>
+            </div>
+
+            <script>
+                var app = new Vue({
+                    el: '#alterar',
+                    data() {
+
+                        return {
+                            produtos: null
+                        }
+                    },
+
+                    mounted() {
+                        axios
+                            .get('http://localhost:8081/albus/produto')
+                            .then(response => (this.produtos = response.data))
+
+                    },
+
+                    methods: {
+                        alterar: function () {
+
+                            const nomeProd = document.getElementById("nomeProd");
+                            const id = nomeProd.options[nomeProd.selectedIndex].value;
+
+                            var atributo = document.getElementById("nomeAtributo")
+                            atributo = atributo.options[atributo.selectedIndex].value;
+
+                            const valor = document.getElementById("novoValor").value;
+
+                            var prod
+                            try {
+
+
+                                const dados = axios.get('http://localhost:8081/albus/produto/' + id)
+
+                                dados.then(function (resp) {
+                                    console.log(resp.data);
+                                    prod = resp.data;
+                                    if (atributo === "nome" || atributo === "descricao" || atributo === "urlImg") {
+                                        prod[atributo] = valor;
+                                    } else {
+                                        prod[atributo] = JSON.parse(valor);
+                                    }
+                                    console.log(prod)
+                                    axios.put('http://localhost:8081/albus/produto/' + id, prod)
+                                })
+
+                            } catch (error) {
+                                console.log(error)
+                            } finally {
+                                window.alert("Produto Alterado!")
+                            }
+
+
+                        }
+                    }
+
+                })
+            </script>
+
+            <div class="form col-9" id="deletar" style="display: none;">
+                <h3>Deletar Produto</h3>
+                <label>Produto:</label><br>
+                <select name="nomeProd" id="produtoDelete" class=" container-fluid">
+                    <option v-for="produto in produtos" v-bind:value="produto.id">{{produto.descricao}}</option>
+                </select>
+                <br>
+                <br>
+                <button class="bt btn-info container-fluid" value="env" v-on:click="deletar()"> deletar</button>
+            </div>
+            <script>
+                var app2 = new Vue({
+                    el: "#deletar",
+                    data() {
+
+                        return {
+                            produtos: null
+                        }
+                    },
+
+                    mounted() {
+                        axios
+                            .get('http://localhost:8081/albus/produto')
+                            .then(response => (this.produtos = response.data))
+
+                    },
+                    methods: {
+                        deletar: function () {
+                            const select = document.getElementById('produtoDelete');
+                            const id = select.options[select.selectedIndex].value;
+                            console.log(id)
+
+                            try {
+                                axios.delete('http://localhost:8081/albus/produto/' + id);
+                            } catch (e) {
+                                console.log(e);
+                            } finally { window.alert("Produto removido com sucesso!") }
+
+                        }
+                    }
+                })
+            </script>
+        </div>
+
+        <div class="row" id="admCategoria" style=" float: right; width:65%; margin: 0; margin-top: -3%; ">
+            <div class="form col-6" id="addCat" style="display: none;">
+                <h3>Adicionar Categoria</h3>
+                <label for="tipoCategoria">Tipo de Categoria: </label><br>
+                <select name="tipoCategoria" id="tipoCategoria" class="container-fluid">
+                    <option value="produto">Produto</option>
+                    <option value="servico">Serviço</option>
+                </select>
+                <br>
+                <label for="nomeCat">Nome da Categoria: </label><br>
+                <input type="text" id="nomeCat" class="container-fluid">
+                <br>
+                <label for="descCat">Descrição: </label>
+                <br>
+                <input type="text" id="descCat" class="container-fluid" />
+                <br>
+                <br>
+                <button class="bt btn btn-info container-fluid" v-on:click="adicionaCategoria()">Adicionar</button>
+            </div>
+
+            <script>
+                var app = new Vue({
+                    el: "#addCat",
+                    data() {
+                        return {
+                            produtos: null
+                        }
+                    },
+                    methods: {
+                        adicionaCategoria: function () {
+                            const escolha = document.getElementById("tipoCategoria");
+                            const value = escolha.options[escolha.selectedIndex].value.toUpperCase();
+                            const nome = document.getElementById("nomeCat").value;
+                            const descricao = document.getElementById("descCat").value;
+
+                            try {
+                                axios.post("http://localhost:8081/albus/categoria/", {
+                                    "tipoCategoria": value,
+                                    "nome": nome,
+                                    "descricao": descricao
+                                })
+                            } catch (error) {
+                                console.log(error)
+                            } finally {
+                                window.alert("Categoria cadastrada!")
+                            }
+                        }
+                    }
+                })
+            </script>
+            <div class="form col-6" id="altCat" style="display: none;">
+                <h3>Alterar Categoria</h3>
+                <label>Categoria:</label><br>
+                <select name="nomeCatAlt" id="nomeCatAlt" class="container-fluid">
+                    <option v-for="categoria in categorias" v-bind:value="categoria.id">{{categoria.descricao}}</option>
+                </select>
+                <br>
+                <label for="atributoCat">Atributo a ser alterado:</label>
+                <select name="atributoCat" id="atributoCat" class="container-fluid">
+                    <option value="nome">Nome</option>
+                    <option value="tipoCategoria">Tipo da Categoria</option>
+                    <option value="descricao">Descrição</option>
+                </select><br>
+                <label for="valorCat">Novo valor:</label><br>
+                <input type="text" id="valorCat" class="container-fluid" /><br><br>
+                <button class="bt btn btn-info container-fluid" v-on:click="alterarCategoria()">Alterar</button>
+            </div>
+            <script>
+                var app = new Vue({
+                    el: '#altCat',
+                    data() {
+
+                        return {
+                            categorias: null
+                        }
+                    },
+
+                    mounted() {
+                        axios
+                            .get('http://localhost:8081/albus/categoria')
+                            .then(response => (this.categorias = response.data))
+
+                    },
+                    methods: {
+                        alterarCategoria: function () {
+                            const escolha = document.getElementById("nomeCatAlt");
+                            const id = escolha.options[escolha.selectedIndex].value;
+                            console.log(id)
+
+                            var atributo = document.getElementById("atributoCat");
+                            atributo = atributo.options[atributo.selectedIndex].value;
+                            console.log(atributo);
+
+                            const valor = document.getElementById("valorCat").value;
+                            console.log(valor);
+
+                            var categoria
+
+                            try {
+
+                                const dados = axios.get('http://localhost:8081/albus/categoria/' + id)
+
+                                dados.then(function (resp) {
+                                    console.log(resp.data);
+                                    categoria = resp.data;
+                                    if (atributo === "tipoCategoria") {
+                                        categoria[atributo] = valor.toUpperCase();
+                                    } else {
+                                        categoria[atributo] = valor;
+                                    }
+                                    console.log(categoria)
+                                    axios.put('http://localhost:8081/albus/categoria/' + id, categoria)
+                                })
+
+                            } catch (error) {
+                                console.log(error)
+                            } finally {
+                                window.alert("categoria Alterada!")
+                            }
+                        }
+                    }
+                })
+            </script>
+
+            <div class="form col-6" id="delCat" style="display: none;">
+                <h3>Deletar Categoria</h3>
+                <label>Categoria:</label><br>
+                <select name="nomeCat " id="catDelete" class=" container-fluid">
+                    <option v-for="categoria in categorias" v-bind:value="categoria.id">{{categoria.descricao}}</option>
+                </select>
+                <br>
+                <br>
+                <button class="bt btn-info container-fluid" value="env" v-on:click="deletar()"> deletar</button>
+            </div>
+
+            <script>
+                var app2 = new Vue({
+                    el: "#delCat",
+                    data() {
+
+                        return {
+                            categorias: null
+                        }
+                    },
+
+                    mounted() {
+                        axios
+                            .get('http://localhost:8081/albus/categoria')
+                            .then(response => (this.categorias = response.data))
+
+                    },
+                    methods: {
+                        deletar: function () {
+                            const select = document.getElementById('catDelete');
+                            const id = select.options[select.selectedIndex].value;
+                            console.log(id)
+                            try {
+                                axios.delete('http://localhost:8081/albus/categoria/' + id);
+                            } catch (e) {
+                                console.log(e);
+                            } finally { window.alert("Categoria removida com sucesso!") }
+
+                        }
+                    }
+                })
+            </script>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        //script de teste para preencher a API
+        var array = [
+            {
+
+                "nome": "Bateria Michael",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 100,
+                "descricao": "Bateria Simples Completa",
+                "custo": 300.8,
+                "valorDeVenda": 700.9,
+                "urlImg": "https://cdn.pixabay.com/photo/2016/09/26/19/21/drums-1696802_960_720.png"
+            },
+            {
+
+                "nome": "Baixo 4 cordas",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 30,
+                "descricao": "Baixo Fender 4 cordas",
+                "custo": 540,
+                "valorDeVenda": 789.9,
+                "urlImg": "https://cdn.awsli.com.br/554/554104/produto/34158969/contrabaixo-strinberg-4-cordas-jazz-bass-jbs40-bk-68bb4c69.png"
+            },
+            {
+
+                "nome": "Guitarra Fender",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 5,
+                "descricao": "Guitarra Fender Telecaster",
+                "custo": 1000,
+                "valorDeVenda": 2000,
+                "urlImg": "https://images-submarino.b2w.io/produtos/01/00/img/14809/1/14809145_1GG.jpg"
+            },
+            {
+
+                "nome": "Violão Folk",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 200,
+                "descricao": "Violão Folk Eagle",
+                "custo": 300,
+                "valorDeVenda": 459.9,
+                "urlImg": "https://www.havan.com.br/media/catalog/product/cache/55f334c6f9412d6b39cfe195ce4e3943/v/i/viol_o-folk-serie-woodstock-tw-25-tagima_294538.jpg"
+            },
+            {
+
+                "nome": "Cubo meteoro",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 50,
+                "descricao": "Amplificador - Meteoro",
+                "custo": 600,
+                "valorDeVenda": 739.9,
+                "urlImg": "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQGx_Q5Xceo_4wJ8I3HbgWqNcbjz6ooNNWKj57Ooz7BV6PKjpl9&usqp=CAU"
+            },
+            {
+
+                "nome": "Controlador MIDI",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 100,
+                "descricao": "Controlador MIDI ",
+                "custo": 539.9,
+                "valorDeVenda": 699.9,
+                "urlImg": "https://images-americanas.b2w.io/produtos/01/00/img/191542/3/191542303_1GG.jpg"
+            },
+            {
+
+                "nome": "Vogga",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 10,
+                "descricao": "Cavaquinho Eletrico",
+                "custo": 200,
+                "valorDeVenda": 479,
+                "urlImg": "https://images.tcdn.com.br/img/img_prod/445926/cavaco_cavaquinho_eletrico_vogga_vcc533_natural_610_1_20190124101027.png"
+            },
+            {
+
+                "nome": "liverpool",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 200,
+                "descricao": "Pandeiro meia-lua",
+                "custo": 30,
+                "valorDeVenda": 59.9,
+                "urlImg": "https://d26lpennugtm8s.cloudfront.net/stores/613/606/products/pandeiro-meia-lua-liverpool-preto1-60fab81b1f9a9cc6e915191396355860-640-0.png"
+            },
+            {
+
+                "nome": "D-seed",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 100,
+                "descricao": "Pedal Delay",
+                "custo": 500,
+                "valorDeVenda": 799,
+                "urlImg": "https://cdn.iset.io/assets/54224/produtos/623/cd504f540476d79060b4c47520fcbc25.jpg"
+            },
+            {
+
+                "nome": "marley",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 300,
+                "descricao": "Cajon Inclinado",
+                "custo": 100,
+                "valorDeVenda": 290,
+                "urlImg": "https://www.extra-imagens.com.br/InstrumentosMusicais/Percussao/Cajons/10375102/1216485843/cajon-acustico-inclinado-strike-classic-12-fios-sk1000-fsa-10375102.jpg"
+            },
+            {
+
+                "nome": "Fender",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 300,
+                "descricao": "Fender Stratocaster",
+                "custo": 600,
+                "valorDeVenda": 1000,
+                "urlImg": "https://www.lojaopenstage.com.br/files/grade_imagem/file/3533/zoom/artic-white-1449333918.png"
+            },
+            {
+
+                "nome": "Pedaleira BOSS",
+                "categoria": {
+                    "id": 1,
+                    "tipoCategoria": "PRODUTO",
+                    "nome": "produto",
+                    "descricao": "produto fisico"
+                },
+                "quantidade": 300,
+                "descricao": "BOSS ME 25",
+                "custo": 600,
+                "valorDeVenda": 889,
+                "urlImg": "https://www.teclacenter.com.br/images/detailed/6/org_adic02_1858_me25-zoom.png"
+            }
+        ];
+
+        function cria() {
+            array.forEach(element => {
+                axios.post("http://localhost:8081/albus/produto/", element);
+            });
+            window.alert("você adicionou " + array.length + " produtos");
+        }
+    </script>
+</body>
+
+</html>
